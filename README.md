@@ -188,3 +188,6 @@ Report:
 - selector prediction error
 
 The main research question is whether the adaptive policy reduces total estimated/measured carbon compared with fixed policies while maintaining acceptable runtime.
+=======
+# Green-TAG
+
