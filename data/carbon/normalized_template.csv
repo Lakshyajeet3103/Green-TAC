@@ -1,0 +1,2 @@
+timestamp,region,carbon_intensity_gco2e_per_kwh,source,granularity,notes
+2026-01-01T00:00:00Z,example,400,example,hourly,Replace with measured/public dataset values

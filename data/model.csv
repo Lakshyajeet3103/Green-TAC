@@ -1,0 +1,3 @@
+# Generated-model format: strategy,metric,feature,coefficient
+# This repository intentionally ships without fabricated calibration coefficients.
+# Run tools/fit_model.py after collecting measurements to create a calibrated model.

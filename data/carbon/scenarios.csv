@@ -1,0 +1,6 @@
+scenario,compile_ci_gco2e_per_kwh,runtime_ci_gco2e_per_kwh,source_type,notes
+low,150,150,synthetic,Controlled scenario for reproducible experiments
+medium,400,400,synthetic,Controlled scenario for reproducible experiments
+high,700,700,synthetic,Controlled scenario for reproducible experiments
+compile_high_runtime_low,700,150,synthetic,Demonstrates different compilation/runtime carbon conditions
+compile_low_runtime_high,150,700,synthetic,Demonstrates different compilation/runtime carbon conditions
