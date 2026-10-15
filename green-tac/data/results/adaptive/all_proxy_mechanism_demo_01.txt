@@ -1,0 +1,55 @@
+
+================ GREEN STRATEGY DECISION ================
+Model                 : partial / proxy fallback
+Compile-energy model  : no
+Runtime-energy model  : no
+Runtime-time model    : no
+Energy/CO2e status    : PROXY estimates for missing energy models; not measured savings
+Compile carbon        : 700.0 gCO2e/kWh
+Runtime carbon        : 200.0 gCO2e/kWh
+Expected executions   : 1
+Max runtime overhead  : 10.0%
+
+  Instructions              21
+  Binary operations          13
+  Branches                    0
+  Labels                      0
+  Temporaries                13
+  Basic blocks                1
+  Expression depth            3
+  Common subexpressions       4
+
++----------------+------------+------------+--------------+--------------+---------+
+| Strategy       | Compile J  | Runtime J  | Runtime ms   | CO2e (g)     | Allowed |
++----------------+------------+------------+--------------+--------------+---------+
+| baseline       |     11.650 |     44.900 |  0.470000000 |     0.004760 |     yes |
+| lightweight    |     16.950 |     36.900 |  0.370000000 |     0.005346 |     yes |
+| dag            |     25.300 |     31.100 |  0.310000000 |     0.006647 |     yes |
++----------------+------------+------------+--------------+--------------+---------+
+
+Selected strategy    : baseline
+Measurement note      : at least one energy model is unavailable; proxy estimates are used for missing metrics.
+=========================================================
+-------------------------------- TAC --------------------------------
+t1 = 10 + 20
+a = t1
+t2 = a * 1
+b = t2
+t3 = b + 0
+c = t3
+t4 = x + y
+t5 = x + y
+t6 = t4 * t5
+d = t6
+t7 = x + y
+t8 = x + y
+t9 = t7 + t8
+e = t9
+t10 = 5 * 6
+f = t10
+t11 = d + f
+g = t11
+t12 = x + y
+t13 = t12 * 1
+h = t13
+------------------------------------------------------------------------

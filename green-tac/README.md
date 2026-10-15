@@ -43,6 +43,39 @@ python run.py demo       # full walkthrough on benchmarks/cse.c
 
 `run.py` builds the compiler automatically the first time you use it.
 
+### Prototype review snapshot on 15 October 2026
+
+The current runtime study measures 31 programs across all five generated
+categories and the handwritten CSE example: 93 program-strategy observations
+and 465 timed batches. In-process timing excludes process startup. The three
+runtime models have been fitted and validated on 24 training and 7 held-out
+programs each. **All three models perform worse than the training-mean
+reference on this holdout.** The fitted runtime model is exploratory; it does
+not establish a reliable runtime-overhead guarantee.
+
+Physical energy calibration remains pending. Adaptive demonstrations use
+explicitly labeled proxy energy and hypothetical carbon-intensity scenarios.
+On `benchmarks/cse.c`, compile CI 700 and runtime CI 200 select baseline at
+one execution, lightweight at three and DAG at ten.
+
+- [Progress report](review/progress_report.md)
+- [Printable report](review/progress_report.html)
+- [Offline presentation with speaker notes](review/presentation.html)
+- [Validation metrics](data/model_metrics.csv)
+
+```powershell
+python run.py adaptive-demo
+python -m unittest discover -s tests -p 'test_*.py'
+# Collect another study without overwriting the original:
+python run.py runtime-study --out data/runtime_study_repeat
+# Run with a Python environment containing numpy and scikit-learn:
+python run.py fit --csv data/runtime_study_repeat/measurements.csv --python PATH_TO_PYTHON
+python tools/build_review.py
+```
+
+The review files are self-contained HTML and Markdown; open the presentation
+directly in a browser and use arrow keys, Notes, Fullscreen or Print.
+
 ## Prerequisites
 
 | Requirement | Used for | Notes |
@@ -92,7 +125,7 @@ The compiled binary can also be called directly:
 ```text
 green_tac tac <file> <baseline|lightweight|dag>
 green_tac compare <file>
-green_tac features <file>
+green_tac features <file> [--machine]
 green_tac c <file> <baseline|lightweight|dag> <out.c>
 green_tac select <file> [model.csv] [compileCI] [runtimeCI] [executions] [maxRuntimeOverhead]
 green_tac info
@@ -179,7 +212,9 @@ predicted runtime is within `max-runtime-overhead` of the baseline.
 
 - `data/model.csv` holds linear-model coefficients (`strategy,metric,feature,coefficient`)
   for `compile_energy`, `runtime_energy`, and `runtime_ms`, fitted from real measurements.
-- The repository **ships without fabricated coefficients**. When a metric is not
+- The repository contains runtime coefficients fitted from the recorded study,
+  with poor held-out accuracy documented above; it contains no fabricated energy
+  coefficients. When a metric is not
   calibrated, the selector falls back to a transparent, feature-based **proxy**
   and clearly labels the output as `partial / proxy fallback`.
 - Proxy numbers are for demonstration only and must not be reported as measured energy.

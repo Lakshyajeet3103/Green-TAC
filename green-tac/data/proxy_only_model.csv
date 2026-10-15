@@ -1,0 +1,3 @@
+# Deliberately empty calibration file for reproducible mechanism demonstrations.
+# All energy and runtime predictions use the selector's built-in proxies.
+# This file contains no measured or fitted coefficients.

@@ -1,0 +1,17 @@
+mode,scenario,executions,compile_ci,runtime_ci,selected,energy_status
+runtime_fit_energy_proxy,One execution,1,700,200,baseline,PROXY NOT MEASURED
+runtime_fit_energy_proxy,Three executions,3,700,200,lightweight,PROXY NOT MEASURED
+runtime_fit_energy_proxy,Ten executions,10,700,200,dag,PROXY NOT MEASURED
+runtime_fit_energy_proxy,Cleaner compilation,1,200,200,lightweight,PROXY NOT MEASURED
+runtime_fit_energy_proxy,Dirtier execution,1,700,700,lightweight,PROXY NOT MEASURED
+runtime_fit_energy_proxy,Clean compile dirty runtime,1,200,700,dag,PROXY NOT MEASURED
+runtime_fit_energy_proxy,Equal low intensity,1,200,200,lightweight,PROXY NOT MEASURED
+runtime_fit_energy_proxy,Equal high intensity,1,700,700,lightweight,PROXY NOT MEASURED
+all_proxy_mechanism_demo,One execution,1,700,200,baseline,PROXY NOT MEASURED
+all_proxy_mechanism_demo,Three executions,3,700,200,lightweight,PROXY NOT MEASURED
+all_proxy_mechanism_demo,Ten executions,10,700,200,dag,PROXY NOT MEASURED
+all_proxy_mechanism_demo,Cleaner compilation,1,200,200,lightweight,PROXY NOT MEASURED
+all_proxy_mechanism_demo,Dirtier execution,1,700,700,lightweight,PROXY NOT MEASURED
+all_proxy_mechanism_demo,Clean compile dirty runtime,1,200,700,dag,PROXY NOT MEASURED
+all_proxy_mechanism_demo,Equal low intensity,1,200,200,lightweight,PROXY NOT MEASURED
+all_proxy_mechanism_demo,Equal high intensity,1,700,700,lightweight,PROXY NOT MEASURED

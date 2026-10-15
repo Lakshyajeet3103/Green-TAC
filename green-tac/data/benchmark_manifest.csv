@@ -1,0 +1,11 @@
+program,category,seed
+benchmarks/generated/arithmetic_000.c,arithmetic,42
+benchmarks/generated/arithmetic_001.c,arithmetic,43
+benchmarks/generated/cse_000.c,cse,1042
+benchmarks/generated/cse_001.c,cse,1043
+benchmarks/generated/constant_000.c,constant,2042
+benchmarks/generated/constant_001.c,constant,2043
+benchmarks/generated/loop_000.c,loop,3042
+benchmarks/generated/loop_001.c,loop,3043
+benchmarks/generated/mixed_000.c,mixed,4042
+benchmarks/generated/mixed_001.c,mixed,4043

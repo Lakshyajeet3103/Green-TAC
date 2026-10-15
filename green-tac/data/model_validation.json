@@ -1,0 +1,171 @@
+{
+  "source": "data/runtime_study/measurements.csv",
+  "source_sha256": "c15f289121ef4de66d61ebc7e833c529ebfd0fc0a927c7cd2625509b571bb954",
+  "sklearn_version": "1.7.0",
+  "model": "StandardScaler then Ridge alpha=1",
+  "split": "GroupShuffleSplit by program, test_size=0.2, random_state=42",
+  "validation_predictions": "Clipped at zero, matching C++ selector",
+  "export": "Refit on all usable rows; raw-feature coefficients. Held-out metrics use training-only models.",
+  "limitations": [
+    "Synthetic programs may share templates across splits.",
+    "A single small holdout does not establish generalization to real applications.",
+    "Runtime constraint checks are predictions, not guarantees."
+  ],
+  "splits": [
+    {
+      "strategy": "baseline",
+      "metric": "runtime_ms",
+      "train_programs": [
+        "benchmarks/cse.c",
+        "benchmarks/generated/arithmetic_000.c",
+        "benchmarks/generated/arithmetic_003.c",
+        "benchmarks/generated/arithmetic_007.c",
+        "benchmarks/generated/arithmetic_008.c",
+        "benchmarks/generated/arithmetic_019.c",
+        "benchmarks/generated/arithmetic_020.c",
+        "benchmarks/generated/constant_002.c",
+        "benchmarks/generated/constant_017.c",
+        "benchmarks/generated/constant_018.c",
+        "benchmarks/generated/constant_021.c",
+        "benchmarks/generated/cse_000.c",
+        "benchmarks/generated/cse_001.c",
+        "benchmarks/generated/cse_006.c",
+        "benchmarks/generated/cse_013.c",
+        "benchmarks/generated/loop_000.c",
+        "benchmarks/generated/loop_006.c",
+        "benchmarks/generated/loop_016.c",
+        "benchmarks/generated/loop_017.c",
+        "benchmarks/generated/loop_020.c",
+        "benchmarks/generated/mixed_000.c",
+        "benchmarks/generated/mixed_007.c",
+        "benchmarks/generated/mixed_013.c",
+        "benchmarks/generated/mixed_018.c"
+      ],
+      "test_programs": [
+        "benchmarks/generated/constant_003.c",
+        "benchmarks/generated/constant_004.c",
+        "benchmarks/generated/cse_002.c",
+        "benchmarks/generated/cse_007.c",
+        "benchmarks/generated/loop_019.c",
+        "benchmarks/generated/mixed_008.c",
+        "benchmarks/generated/mixed_014.c"
+      ]
+    },
+    {
+      "strategy": "lightweight",
+      "metric": "runtime_ms",
+      "train_programs": [
+        "benchmarks/cse.c",
+        "benchmarks/generated/arithmetic_000.c",
+        "benchmarks/generated/arithmetic_003.c",
+        "benchmarks/generated/arithmetic_007.c",
+        "benchmarks/generated/arithmetic_008.c",
+        "benchmarks/generated/arithmetic_019.c",
+        "benchmarks/generated/arithmetic_020.c",
+        "benchmarks/generated/constant_002.c",
+        "benchmarks/generated/constant_017.c",
+        "benchmarks/generated/constant_018.c",
+        "benchmarks/generated/constant_021.c",
+        "benchmarks/generated/cse_000.c",
+        "benchmarks/generated/cse_001.c",
+        "benchmarks/generated/cse_006.c",
+        "benchmarks/generated/cse_013.c",
+        "benchmarks/generated/loop_000.c",
+        "benchmarks/generated/loop_006.c",
+        "benchmarks/generated/loop_016.c",
+        "benchmarks/generated/loop_017.c",
+        "benchmarks/generated/loop_020.c",
+        "benchmarks/generated/mixed_000.c",
+        "benchmarks/generated/mixed_007.c",
+        "benchmarks/generated/mixed_013.c",
+        "benchmarks/generated/mixed_018.c"
+      ],
+      "test_programs": [
+        "benchmarks/generated/constant_003.c",
+        "benchmarks/generated/constant_004.c",
+        "benchmarks/generated/cse_002.c",
+        "benchmarks/generated/cse_007.c",
+        "benchmarks/generated/loop_019.c",
+        "benchmarks/generated/mixed_008.c",
+        "benchmarks/generated/mixed_014.c"
+      ]
+    },
+    {
+      "strategy": "dag",
+      "metric": "runtime_ms",
+      "train_programs": [
+        "benchmarks/cse.c",
+        "benchmarks/generated/arithmetic_000.c",
+        "benchmarks/generated/arithmetic_003.c",
+        "benchmarks/generated/arithmetic_007.c",
+        "benchmarks/generated/arithmetic_008.c",
+        "benchmarks/generated/arithmetic_019.c",
+        "benchmarks/generated/arithmetic_020.c",
+        "benchmarks/generated/constant_002.c",
+        "benchmarks/generated/constant_017.c",
+        "benchmarks/generated/constant_018.c",
+        "benchmarks/generated/constant_021.c",
+        "benchmarks/generated/cse_000.c",
+        "benchmarks/generated/cse_001.c",
+        "benchmarks/generated/cse_006.c",
+        "benchmarks/generated/cse_013.c",
+        "benchmarks/generated/loop_000.c",
+        "benchmarks/generated/loop_006.c",
+        "benchmarks/generated/loop_016.c",
+        "benchmarks/generated/loop_017.c",
+        "benchmarks/generated/loop_020.c",
+        "benchmarks/generated/mixed_000.c",
+        "benchmarks/generated/mixed_007.c",
+        "benchmarks/generated/mixed_013.c",
+        "benchmarks/generated/mixed_018.c"
+      ],
+      "test_programs": [
+        "benchmarks/generated/constant_003.c",
+        "benchmarks/generated/constant_004.c",
+        "benchmarks/generated/cse_002.c",
+        "benchmarks/generated/cse_007.c",
+        "benchmarks/generated/loop_019.c",
+        "benchmarks/generated/mixed_008.c",
+        "benchmarks/generated/mixed_014.c"
+      ]
+    }
+  ],
+  "skipped": [
+    {
+      "strategy": "baseline",
+      "metric": "compile_energy_j",
+      "unique_programs": 0,
+      "reason": "requires at least 20 unique programs"
+    },
+    {
+      "strategy": "baseline",
+      "metric": "runtime_energy_j",
+      "unique_programs": 0,
+      "reason": "requires at least 20 unique programs"
+    },
+    {
+      "strategy": "lightweight",
+      "metric": "compile_energy_j",
+      "unique_programs": 0,
+      "reason": "requires at least 20 unique programs"
+    },
+    {
+      "strategy": "lightweight",
+      "metric": "runtime_energy_j",
+      "unique_programs": 0,
+      "reason": "requires at least 20 unique programs"
+    },
+    {
+      "strategy": "dag",
+      "metric": "compile_energy_j",
+      "unique_programs": 0,
+      "reason": "requires at least 20 unique programs"
+    },
+    {
+      "strategy": "dag",
+      "metric": "runtime_energy_j",
+      "unique_programs": 0,
+      "reason": "requires at least 20 unique programs"
+    }
+  ]
+}

@@ -1,0 +1,578 @@
+[
+  {
+    "mode": "runtime_fit_energy_proxy",
+    "scenario": "One execution",
+    "executions": 1,
+    "compile_ci": 700,
+    "runtime_ci": 200,
+    "selected": "baseline",
+    "energy_status": "PROXY NOT MEASURED",
+    "candidates": [
+      {
+        "strategy": "baseline",
+        "compile_energy_proxy": 11.65,
+        "runtime_energy_proxy": 44.9,
+        "runtime_ms": 4.727e-06,
+        "carbon_proxy_g": 0.00476,
+        "allowed": true
+      },
+      {
+        "strategy": "lightweight",
+        "compile_energy_proxy": 16.95,
+        "runtime_energy_proxy": 36.9,
+        "runtime_ms": 4.626e-06,
+        "carbon_proxy_g": 0.005346,
+        "allowed": true
+      },
+      {
+        "strategy": "dag",
+        "compile_energy_proxy": 25.3,
+        "runtime_energy_proxy": 31.1,
+        "runtime_ms": 4.681e-06,
+        "carbon_proxy_g": 0.006647,
+        "allowed": true
+      }
+    ],
+    "command": "bin/green_tac select benchmarks/cse.c data/model.csv 700 200 1 0.10"
+  },
+  {
+    "mode": "runtime_fit_energy_proxy",
+    "scenario": "Three executions",
+    "executions": 3,
+    "compile_ci": 700,
+    "runtime_ci": 200,
+    "selected": "lightweight",
+    "energy_status": "PROXY NOT MEASURED",
+    "candidates": [
+      {
+        "strategy": "baseline",
+        "compile_energy_proxy": 11.65,
+        "runtime_energy_proxy": 44.9,
+        "runtime_ms": 4.727e-06,
+        "carbon_proxy_g": 0.009749,
+        "allowed": true
+      },
+      {
+        "strategy": "lightweight",
+        "compile_energy_proxy": 16.95,
+        "runtime_energy_proxy": 36.9,
+        "runtime_ms": 4.626e-06,
+        "carbon_proxy_g": 0.009446,
+        "allowed": true
+      },
+      {
+        "strategy": "dag",
+        "compile_energy_proxy": 25.3,
+        "runtime_energy_proxy": 31.1,
+        "runtime_ms": 4.681e-06,
+        "carbon_proxy_g": 0.010103,
+        "allowed": true
+      }
+    ],
+    "command": "bin/green_tac select benchmarks/cse.c data/model.csv 700 200 3 0.10"
+  },
+  {
+    "mode": "runtime_fit_energy_proxy",
+    "scenario": "Ten executions",
+    "executions": 10,
+    "compile_ci": 700,
+    "runtime_ci": 200,
+    "selected": "dag",
+    "energy_status": "PROXY NOT MEASURED",
+    "candidates": [
+      {
+        "strategy": "baseline",
+        "compile_energy_proxy": 11.65,
+        "runtime_energy_proxy": 44.9,
+        "runtime_ms": 4.727e-06,
+        "carbon_proxy_g": 0.02721,
+        "allowed": true
+      },
+      {
+        "strategy": "lightweight",
+        "compile_energy_proxy": 16.95,
+        "runtime_energy_proxy": 36.9,
+        "runtime_ms": 4.626e-06,
+        "carbon_proxy_g": 0.023796,
+        "allowed": true
+      },
+      {
+        "strategy": "dag",
+        "compile_energy_proxy": 25.3,
+        "runtime_energy_proxy": 31.1,
+        "runtime_ms": 4.681e-06,
+        "carbon_proxy_g": 0.022197,
+        "allowed": true
+      }
+    ],
+    "command": "bin/green_tac select benchmarks/cse.c data/model.csv 700 200 10 0.10"
+  },
+  {
+    "mode": "runtime_fit_energy_proxy",
+    "scenario": "Cleaner compilation",
+    "executions": 1,
+    "compile_ci": 200,
+    "runtime_ci": 200,
+    "selected": "lightweight",
+    "energy_status": "PROXY NOT MEASURED",
+    "candidates": [
+      {
+        "strategy": "baseline",
+        "compile_energy_proxy": 11.65,
+        "runtime_energy_proxy": 44.9,
+        "runtime_ms": 4.727e-06,
+        "carbon_proxy_g": 0.003142,
+        "allowed": true
+      },
+      {
+        "strategy": "lightweight",
+        "compile_energy_proxy": 16.95,
+        "runtime_energy_proxy": 36.9,
+        "runtime_ms": 4.626e-06,
+        "carbon_proxy_g": 0.002992,
+        "allowed": true
+      },
+      {
+        "strategy": "dag",
+        "compile_energy_proxy": 25.3,
+        "runtime_energy_proxy": 31.1,
+        "runtime_ms": 4.681e-06,
+        "carbon_proxy_g": 0.003133,
+        "allowed": true
+      }
+    ],
+    "command": "bin/green_tac select benchmarks/cse.c data/model.csv 200 200 1 0.10"
+  },
+  {
+    "mode": "runtime_fit_energy_proxy",
+    "scenario": "Dirtier execution",
+    "executions": 1,
+    "compile_ci": 700,
+    "runtime_ci": 700,
+    "selected": "lightweight",
+    "energy_status": "PROXY NOT MEASURED",
+    "candidates": [
+      {
+        "strategy": "baseline",
+        "compile_energy_proxy": 11.65,
+        "runtime_energy_proxy": 44.9,
+        "runtime_ms": 4.727e-06,
+        "carbon_proxy_g": 0.010996,
+        "allowed": true
+      },
+      {
+        "strategy": "lightweight",
+        "compile_energy_proxy": 16.95,
+        "runtime_energy_proxy": 36.9,
+        "runtime_ms": 4.626e-06,
+        "carbon_proxy_g": 0.010471,
+        "allowed": true
+      },
+      {
+        "strategy": "dag",
+        "compile_energy_proxy": 25.3,
+        "runtime_energy_proxy": 31.1,
+        "runtime_ms": 4.681e-06,
+        "carbon_proxy_g": 0.010967,
+        "allowed": true
+      }
+    ],
+    "command": "bin/green_tac select benchmarks/cse.c data/model.csv 700 700 1 0.10"
+  },
+  {
+    "mode": "runtime_fit_energy_proxy",
+    "scenario": "Clean compile dirty runtime",
+    "executions": 1,
+    "compile_ci": 200,
+    "runtime_ci": 700,
+    "selected": "dag",
+    "energy_status": "PROXY NOT MEASURED",
+    "candidates": [
+      {
+        "strategy": "baseline",
+        "compile_energy_proxy": 11.65,
+        "runtime_energy_proxy": 44.9,
+        "runtime_ms": 4.727e-06,
+        "carbon_proxy_g": 0.009378,
+        "allowed": true
+      },
+      {
+        "strategy": "lightweight",
+        "compile_energy_proxy": 16.95,
+        "runtime_energy_proxy": 36.9,
+        "runtime_ms": 4.626e-06,
+        "carbon_proxy_g": 0.008117,
+        "allowed": true
+      },
+      {
+        "strategy": "dag",
+        "compile_energy_proxy": 25.3,
+        "runtime_energy_proxy": 31.1,
+        "runtime_ms": 4.681e-06,
+        "carbon_proxy_g": 0.007453,
+        "allowed": true
+      }
+    ],
+    "command": "bin/green_tac select benchmarks/cse.c data/model.csv 200 700 1 0.10"
+  },
+  {
+    "mode": "runtime_fit_energy_proxy",
+    "scenario": "Equal low intensity",
+    "executions": 1,
+    "compile_ci": 200,
+    "runtime_ci": 200,
+    "selected": "lightweight",
+    "energy_status": "PROXY NOT MEASURED",
+    "candidates": [
+      {
+        "strategy": "baseline",
+        "compile_energy_proxy": 11.65,
+        "runtime_energy_proxy": 44.9,
+        "runtime_ms": 4.727e-06,
+        "carbon_proxy_g": 0.003142,
+        "allowed": true
+      },
+      {
+        "strategy": "lightweight",
+        "compile_energy_proxy": 16.95,
+        "runtime_energy_proxy": 36.9,
+        "runtime_ms": 4.626e-06,
+        "carbon_proxy_g": 0.002992,
+        "allowed": true
+      },
+      {
+        "strategy": "dag",
+        "compile_energy_proxy": 25.3,
+        "runtime_energy_proxy": 31.1,
+        "runtime_ms": 4.681e-06,
+        "carbon_proxy_g": 0.003133,
+        "allowed": true
+      }
+    ],
+    "command": "bin/green_tac select benchmarks/cse.c data/model.csv 200 200 1 0.10"
+  },
+  {
+    "mode": "runtime_fit_energy_proxy",
+    "scenario": "Equal high intensity",
+    "executions": 1,
+    "compile_ci": 700,
+    "runtime_ci": 700,
+    "selected": "lightweight",
+    "energy_status": "PROXY NOT MEASURED",
+    "candidates": [
+      {
+        "strategy": "baseline",
+        "compile_energy_proxy": 11.65,
+        "runtime_energy_proxy": 44.9,
+        "runtime_ms": 4.727e-06,
+        "carbon_proxy_g": 0.010996,
+        "allowed": true
+      },
+      {
+        "strategy": "lightweight",
+        "compile_energy_proxy": 16.95,
+        "runtime_energy_proxy": 36.9,
+        "runtime_ms": 4.626e-06,
+        "carbon_proxy_g": 0.010471,
+        "allowed": true
+      },
+      {
+        "strategy": "dag",
+        "compile_energy_proxy": 25.3,
+        "runtime_energy_proxy": 31.1,
+        "runtime_ms": 4.681e-06,
+        "carbon_proxy_g": 0.010967,
+        "allowed": true
+      }
+    ],
+    "command": "bin/green_tac select benchmarks/cse.c data/model.csv 700 700 1 0.10"
+  },
+  {
+    "mode": "all_proxy_mechanism_demo",
+    "scenario": "One execution",
+    "executions": 1,
+    "compile_ci": 700,
+    "runtime_ci": 200,
+    "selected": "baseline",
+    "energy_status": "PROXY NOT MEASURED",
+    "candidates": [
+      {
+        "strategy": "baseline",
+        "compile_energy_proxy": 11.65,
+        "runtime_energy_proxy": 44.9,
+        "runtime_ms": 0.47,
+        "carbon_proxy_g": 0.00476,
+        "allowed": true
+      },
+      {
+        "strategy": "lightweight",
+        "compile_energy_proxy": 16.95,
+        "runtime_energy_proxy": 36.9,
+        "runtime_ms": 0.37,
+        "carbon_proxy_g": 0.005346,
+        "allowed": true
+      },
+      {
+        "strategy": "dag",
+        "compile_energy_proxy": 25.3,
+        "runtime_energy_proxy": 31.1,
+        "runtime_ms": 0.31,
+        "carbon_proxy_g": 0.006647,
+        "allowed": true
+      }
+    ],
+    "command": "bin/green_tac select benchmarks/cse.c data/proxy_only_model.csv 700 200 1 0.10"
+  },
+  {
+    "mode": "all_proxy_mechanism_demo",
+    "scenario": "Three executions",
+    "executions": 3,
+    "compile_ci": 700,
+    "runtime_ci": 200,
+    "selected": "lightweight",
+    "energy_status": "PROXY NOT MEASURED",
+    "candidates": [
+      {
+        "strategy": "baseline",
+        "compile_energy_proxy": 11.65,
+        "runtime_energy_proxy": 44.9,
+        "runtime_ms": 0.47,
+        "carbon_proxy_g": 0.009749,
+        "allowed": true
+      },
+      {
+        "strategy": "lightweight",
+        "compile_energy_proxy": 16.95,
+        "runtime_energy_proxy": 36.9,
+        "runtime_ms": 0.37,
+        "carbon_proxy_g": 0.009446,
+        "allowed": true
+      },
+      {
+        "strategy": "dag",
+        "compile_energy_proxy": 25.3,
+        "runtime_energy_proxy": 31.1,
+        "runtime_ms": 0.31,
+        "carbon_proxy_g": 0.010103,
+        "allowed": true
+      }
+    ],
+    "command": "bin/green_tac select benchmarks/cse.c data/proxy_only_model.csv 700 200 3 0.10"
+  },
+  {
+    "mode": "all_proxy_mechanism_demo",
+    "scenario": "Ten executions",
+    "executions": 10,
+    "compile_ci": 700,
+    "runtime_ci": 200,
+    "selected": "dag",
+    "energy_status": "PROXY NOT MEASURED",
+    "candidates": [
+      {
+        "strategy": "baseline",
+        "compile_energy_proxy": 11.65,
+        "runtime_energy_proxy": 44.9,
+        "runtime_ms": 0.47,
+        "carbon_proxy_g": 0.02721,
+        "allowed": true
+      },
+      {
+        "strategy": "lightweight",
+        "compile_energy_proxy": 16.95,
+        "runtime_energy_proxy": 36.9,
+        "runtime_ms": 0.37,
+        "carbon_proxy_g": 0.023796,
+        "allowed": true
+      },
+      {
+        "strategy": "dag",
+        "compile_energy_proxy": 25.3,
+        "runtime_energy_proxy": 31.1,
+        "runtime_ms": 0.31,
+        "carbon_proxy_g": 0.022197,
+        "allowed": true
+      }
+    ],
+    "command": "bin/green_tac select benchmarks/cse.c data/proxy_only_model.csv 700 200 10 0.10"
+  },
+  {
+    "mode": "all_proxy_mechanism_demo",
+    "scenario": "Cleaner compilation",
+    "executions": 1,
+    "compile_ci": 200,
+    "runtime_ci": 200,
+    "selected": "lightweight",
+    "energy_status": "PROXY NOT MEASURED",
+    "candidates": [
+      {
+        "strategy": "baseline",
+        "compile_energy_proxy": 11.65,
+        "runtime_energy_proxy": 44.9,
+        "runtime_ms": 0.47,
+        "carbon_proxy_g": 0.003142,
+        "allowed": true
+      },
+      {
+        "strategy": "lightweight",
+        "compile_energy_proxy": 16.95,
+        "runtime_energy_proxy": 36.9,
+        "runtime_ms": 0.37,
+        "carbon_proxy_g": 0.002992,
+        "allowed": true
+      },
+      {
+        "strategy": "dag",
+        "compile_energy_proxy": 25.3,
+        "runtime_energy_proxy": 31.1,
+        "runtime_ms": 0.31,
+        "carbon_proxy_g": 0.003133,
+        "allowed": true
+      }
+    ],
+    "command": "bin/green_tac select benchmarks/cse.c data/proxy_only_model.csv 200 200 1 0.10"
+  },
+  {
+    "mode": "all_proxy_mechanism_demo",
+    "scenario": "Dirtier execution",
+    "executions": 1,
+    "compile_ci": 700,
+    "runtime_ci": 700,
+    "selected": "lightweight",
+    "energy_status": "PROXY NOT MEASURED",
+    "candidates": [
+      {
+        "strategy": "baseline",
+        "compile_energy_proxy": 11.65,
+        "runtime_energy_proxy": 44.9,
+        "runtime_ms": 0.47,
+        "carbon_proxy_g": 0.010996,
+        "allowed": true
+      },
+      {
+        "strategy": "lightweight",
+        "compile_energy_proxy": 16.95,
+        "runtime_energy_proxy": 36.9,
+        "runtime_ms": 0.37,
+        "carbon_proxy_g": 0.010471,
+        "allowed": true
+      },
+      {
+        "strategy": "dag",
+        "compile_energy_proxy": 25.3,
+        "runtime_energy_proxy": 31.1,
+        "runtime_ms": 0.31,
+        "carbon_proxy_g": 0.010967,
+        "allowed": true
+      }
+    ],
+    "command": "bin/green_tac select benchmarks/cse.c data/proxy_only_model.csv 700 700 1 0.10"
+  },
+  {
+    "mode": "all_proxy_mechanism_demo",
+    "scenario": "Clean compile dirty runtime",
+    "executions": 1,
+    "compile_ci": 200,
+    "runtime_ci": 700,
+    "selected": "dag",
+    "energy_status": "PROXY NOT MEASURED",
+    "candidates": [
+      {
+        "strategy": "baseline",
+        "compile_energy_proxy": 11.65,
+        "runtime_energy_proxy": 44.9,
+        "runtime_ms": 0.47,
+        "carbon_proxy_g": 0.009378,
+        "allowed": true
+      },
+      {
+        "strategy": "lightweight",
+        "compile_energy_proxy": 16.95,
+        "runtime_energy_proxy": 36.9,
+        "runtime_ms": 0.37,
+        "carbon_proxy_g": 0.008117,
+        "allowed": true
+      },
+      {
+        "strategy": "dag",
+        "compile_energy_proxy": 25.3,
+        "runtime_energy_proxy": 31.1,
+        "runtime_ms": 0.31,
+        "carbon_proxy_g": 0.007453,
+        "allowed": true
+      }
+    ],
+    "command": "bin/green_tac select benchmarks/cse.c data/proxy_only_model.csv 200 700 1 0.10"
+  },
+  {
+    "mode": "all_proxy_mechanism_demo",
+    "scenario": "Equal low intensity",
+    "executions": 1,
+    "compile_ci": 200,
+    "runtime_ci": 200,
+    "selected": "lightweight",
+    "energy_status": "PROXY NOT MEASURED",
+    "candidates": [
+      {
+        "strategy": "baseline",
+        "compile_energy_proxy": 11.65,
+        "runtime_energy_proxy": 44.9,
+        "runtime_ms": 0.47,
+        "carbon_proxy_g": 0.003142,
+        "allowed": true
+      },
+      {
+        "strategy": "lightweight",
+        "compile_energy_proxy": 16.95,
+        "runtime_energy_proxy": 36.9,
+        "runtime_ms": 0.37,
+        "carbon_proxy_g": 0.002992,
+        "allowed": true
+      },
+      {
+        "strategy": "dag",
+        "compile_energy_proxy": 25.3,
+        "runtime_energy_proxy": 31.1,
+        "runtime_ms": 0.31,
+        "carbon_proxy_g": 0.003133,
+        "allowed": true
+      }
+    ],
+    "command": "bin/green_tac select benchmarks/cse.c data/proxy_only_model.csv 200 200 1 0.10"
+  },
+  {
+    "mode": "all_proxy_mechanism_demo",
+    "scenario": "Equal high intensity",
+    "executions": 1,
+    "compile_ci": 700,
+    "runtime_ci": 700,
+    "selected": "lightweight",
+    "energy_status": "PROXY NOT MEASURED",
+    "candidates": [
+      {
+        "strategy": "baseline",
+        "compile_energy_proxy": 11.65,
+        "runtime_energy_proxy": 44.9,
+        "runtime_ms": 0.47,
+        "carbon_proxy_g": 0.010996,
+        "allowed": true
+      },
+      {
+        "strategy": "lightweight",
+        "compile_energy_proxy": 16.95,
+        "runtime_energy_proxy": 36.9,
+        "runtime_ms": 0.37,
+        "carbon_proxy_g": 0.010471,
+        "allowed": true
+      },
+      {
+        "strategy": "dag",
+        "compile_energy_proxy": 25.3,
+        "runtime_energy_proxy": 31.1,
+        "runtime_ms": 0.31,
+        "carbon_proxy_g": 0.010967,
+        "allowed": true
+      }
+    ],
+    "command": "bin/green_tac select benchmarks/cse.c data/proxy_only_model.csv 700 700 1 0.10"
+  }
+]

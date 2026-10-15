@@ -1,0 +1,8 @@
+build/
+__pycache__/
+*.pyc
+.review-qa/
+data/runtime_study*/*.exe
+data/runtime_study*/*.bin
+data/runtime_study*/*.c
+data/measurements.csv
