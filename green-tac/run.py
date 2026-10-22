@@ -33,6 +33,9 @@ def main() -> int:
     tac.add_argument("source")
     tac.add_argument("--strategy", choices=["baseline","lightweight","dag"], default="baseline")
 
+    steps = sub.add_parser("steps", help="Show tokens, AST tree, optimization steps and shared DAG nodes")
+    steps.add_argument("source")
+
     cmp = sub.add_parser("compare", help="Run all strategies and show formatted TAC comparison")
     cmp.add_argument("source")
 
@@ -105,6 +108,8 @@ def main() -> int:
         return run([sys.executable, str(ROOT / "tools" / "plot_results.py"), args.csv])
     if args.cmd == "tac":
         return run([str(BIN), "tac", args.source, args.strategy])
+    if args.cmd == "steps":
+        return run([str(BIN), "steps", args.source])
     if args.cmd == "compare":
         return run([str(BIN), "compare", args.source])
     if args.cmd == "green":

@@ -6,4 +6,6 @@ namespace greentac {
 enum class Strategy { Baseline, Lightweight, DAG };
 std::string strategyName(Strategy s);
 TACProgram optimize(const TACProgram& input, Strategy s);
+// Same optimizer, with an explanation of each instruction and DAG edge.
+TACProgram optimizeWithSteps(const TACProgram& input, std::ostream& out);
 }

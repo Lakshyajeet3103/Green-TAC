@@ -1,3 +1,4 @@
+#include "greentac/steps.h"
 #include "greentac/lexer.h"
 #include "greentac/parser.h"
 #include "greentac/tac.h"
@@ -39,5 +40,16 @@ int main(){
     auto blocked=selectStrategy(example,ef,constrained,cfg);
     assert(blocked.selected==Strategy::Baseline);
     assert(blocked.candidates[0].allowed && !blocked.candidates[1].allowed && !blocked.candidates[2].allowed);
+    std::ostringstream trace;
+    assert(text(optimizeWithSteps(d,trace))==text(od));
+    assert(trace.str().find("Reuse n")!=std::string::npos);
+    assert(trace.str().find("lhs: n")!=std::string::npos);
+    std::ostringstream tree;
+    printCompilationSteps("while (a < 3) { if (a == 1) { x = a + 1; } else { x = 0; } a = a + 1; }",tree);
+    for(const auto* label:{"1. Tokens", "2. Abstract syntax tree", "While", "then:", "else:", "3. Baseline TAC", "6. Final"})
+        assert(tree.str().find(label)!=std::string::npos);
+    std::ostringstream empty;
+    printCompilationSteps("",empty);
+    assert(empty.str().find("<end>")!=std::string::npos);
     std::cout<<"All tests passed.\n";
 }

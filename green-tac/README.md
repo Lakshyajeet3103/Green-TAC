@@ -323,3 +323,21 @@ Grid carbon data is kept separate from compiler-energy training data
 - [`RESEARCH_WORKFLOW.md`](RESEARCH_WORKFLOW.md) — step-by-step experimental workflow
 - [`data/README.md`](data/README.md) — data file formats
 - [`data/carbon/README.md`](data/carbon/README.md) — carbon-data strategy
+
+## Inspect intermediate compilation steps
+
+```bash
+python run.py steps benchmarks/cse.c
+```
+
+Shows source, tokens with source positions, an ASCII AST tree, baseline TAC,
+each lightweight instruction rewrite, and local DAG nodes with operand edges.
+Repeated node IDs show shared subtrees; `Reuse n...` explains CSE elimination.
+DAGs reset at assignment and control-flow boundaries, matching the optimizer.
+Final TAC matches `python run.py tac benchmarks/cse.c --strategy dag`.
+The binary also supports `green_tac steps <file>`.
+
+The walkthrough uses numbered source and TAC lines, compact token rows, connected
+ASCII tree branches, `Before => After [reason]` explanations, and an aligned final
+comparison with eliminated expressions marked explicitly. It ends with instruction
+counts for a quick demo recap.

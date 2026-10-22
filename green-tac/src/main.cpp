@@ -1,3 +1,4 @@
+#include "greentac/steps.h"
 #include "greentac/lexer.h"
 #include "greentac/parser.h"
 #include "greentac/tac.h"
@@ -34,6 +35,7 @@ Green TAC - Carbon-Aware Adaptive TAC Optimizer
 
 USAGE
   green_tac tac <file> <baseline|lightweight|dag>
+  green_tac steps <file>
   green_tac compare <file>
   green_tac features <file> [--machine]
   green_tac c <file> <baseline|lightweight|dag> <out.c>
@@ -176,6 +178,10 @@ int main(int argc,char**argv){
         }
         if(argc<3){usage();return 2;}
 
+        if(cmd=="steps"){
+            printCompilationSteps(readFile(argv[2]),std::cout);
+            return 0;
+        }
         TACProgram base=parseProgram(argv[2]);
         if(cmd=="tac"){
             Strategy s=argc>=4?parseStrategy(argv[3]):Strategy::Baseline;
