@@ -17,6 +17,9 @@ python -m unittest discover -s tests -p "test_*.py"
 python run.py steps benchmarks/cse.c
 ```
 
+Using a ZIP? Extract it, enter `Green-TAC-main/green-tac`, then run the build
+and demo commands above. Git is not required. See the [ZIP setup steps](SETUP.md#option-a-zip-download-no-git-required).
+
 For Windows compiler installation, Linux/macOS setup, optional analysis packages
 and troubleshooting, follow the [step-by-step setup guide](SETUP.md).
 All `build.py` and `run.py` commands run from the `green-tac/` directory.

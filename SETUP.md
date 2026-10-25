@@ -2,8 +2,9 @@
 
 ## 1. Install the tools
 
-Use Python 3.10 or later, Git and a C++17 compiler. The core build and demo use
-only the Python standard library. A C compiler is needed only to compile emitted
+Use Python 3.10 or later and a C++17 compiler. Git is optional and is needed
+only if you choose to clone the repository instead of extracting a ZIP.
+The core build and demo use only the Python standard library. A C compiler is needed only to compile emitted
 C or run native benchmark measurements.
 
 ### Windows with PowerShell
@@ -12,7 +13,8 @@ C or run native benchmark measurements.
    works in a new terminal. See the [official Windows Python guide](https://docs.python.org/3/using/windows.html)
    if your installation uses the `py` launcher instead. You can substitute `py`
    for `python` in the commands below.
-2. Install [Git for Windows](https://git-scm.com/download/win).
+2. If you plan to clone rather than use a ZIP, install
+   [Git for Windows](https://git-scm.com/download/win). ZIP users can skip this.
 3. Install [MSYS2](https://www.msys2.org/) and open its **UCRT64** terminal.
    Install GCC there:
 
@@ -27,7 +29,6 @@ C or run native benchmark measurements.
    $env:Path = "C:\msys64\ucrt64\bin;" + $env:Path
    python --version
    g++ --version
-   git --version
    ```
 
    If you already use MSYS2 MINGW64, use `C:\msys64\mingw64\bin` instead.
@@ -62,7 +63,36 @@ Install Python 3.10+ from [python.org](https://www.python.org/downloads/macos/).
 Check `python3 --version` and `clang++ --version`, then use `python3` below.
 The build script detects `c++` or `clang++` when `g++` is unavailable.
 
-## 2. Clone and enter the compiler directory
+## 2. Extract the ZIP or clone the repository
+
+### Option A: ZIP download (no Git required)
+
+1. On the [GitHub repository](https://github.com/Lakshyajeet3103/Green-TAC),
+   select the `main` branch, then **Code > Download ZIP**. If someone gives you
+   the ZIP directly, use that file instead.
+2. Extract the complete ZIP to a normal folder. Run the project from the
+   extracted folder, rather than from inside the compressed ZIP viewer.
+3. Open a terminal in the extracted folder. A GitHub download usually creates
+   a folder named `Green-TAC-main`. From its parent directory, run:
+
+   ```powershell
+   cd Green-TAC-main/green-tac
+   python build.py
+   python run.py test
+   python -m unittest discover -s tests -p "test_*.py"
+   python run.py steps benchmarks/cse.c
+   python run.py steps benchmarks/optimization_showcase.c
+   ```
+
+   If your terminal is already inside `Green-TAC-main`, run `cd green-tac`
+   first. If the ZIP has a different folder name, use that name instead.
+
+**Rebuild on the recipient's computer** with `python build.py`, even if the ZIP
+already contains an executable. Python and a C++17 compiler must be installed
+and available on PATH. These examples need no extra Python packages.
+For Windows compiler installation and its PATH command, see step 1 above.
+
+### Option B: Git clone
 
 ```powershell
 git clone https://github.com/Lakshyajeet3103/Green-TAC.git
@@ -83,7 +113,7 @@ python -m unittest discover -s tests -p "test_*.py"
 The executable is `bin/green_tac.exe` on Windows and `bin/green_tac` on Linux/macOS.
 The C++ tests print `All tests passed.` Python tests finish with `OK` (some
 research-evidence tests may skip when their optional data files are absent).
-Always build after cloning or changing C++ source. `run.py` automatically builds
+Always build after extracting a ZIP, cloning, or changing C++ source. `run.py` automatically builds
 only when the executable is absent, not when its sources change.
 
 ## 4. Run both presentation examples
