@@ -10,7 +10,12 @@ std::unique_ptr<Stmt> Parser::parseStmt(){
     if(match(TokenType::If)){
         expect(TokenType::LParen,"("); auto cond=parseExpr(); expect(TokenType::RParen,")");
         auto s=std::make_unique<IfStmt>(); s->cond=std::move(cond); s->thenBlock=parseBlock();
-        if(match(TokenType::Else)) s->elseBlock=parseBlock();
+        if(match(TokenType::Else)) {
+            if(current().type==TokenType::If) {
+                s->elseBlock=std::make_unique<BlockStmt>();
+                s->elseBlock->statements.push_back(parseStmt());
+            } else s->elseBlock=parseBlock();
+        }
         return s;
     }
     if(match(TokenType::While)){
@@ -25,14 +30,38 @@ std::unique_ptr<BlockStmt> Parser::parseBlock(){
     while(current().type!=TokenType::RBrace){ if(current().type==TokenType::End) throw std::runtime_error("Unterminated block"); b->statements.push_back(parseStmt()); }
     expect(TokenType::RBrace,"}"); return b;
 }
-std::unique_ptr<Expr> Parser::parseExpr(){ return parseComparison(); }
+std::unique_ptr<Expr> Parser::parseExpr(){ return parseOr(); }
+std::unique_ptr<Expr> Parser::parseOr(){
+    auto e=parseAnd();
+    while(match(TokenType::Or)){auto r=parseAnd();e=std::make_unique<BinaryExpr>("||",std::move(e),std::move(r));}
+    return e;
+}
+std::unique_ptr<Expr> Parser::parseAnd(){
+    auto e=parseEquality();
+    while(match(TokenType::And)){auto r=parseEquality();e=std::make_unique<BinaryExpr>("&&",std::move(e),std::move(r));}
+    return e;
+}
+std::unique_ptr<Expr> Parser::parseEquality(){
+    auto e=parseComparison();
+    while(current().type==TokenType::Eq||current().type==TokenType::Ne){
+        std::string op=current().lexeme;++pos_;auto r=parseComparison();
+        e=std::make_unique<BinaryExpr>(op,std::move(e),std::move(r));
+    }
+    return e;
+}
 std::unique_ptr<Expr> Parser::parseComparison(){
     auto e=parseAddSub();
-    while(true){ std::string op; switch(current().type){case TokenType::Eq:op="==";break;case TokenType::Ne:op="!=";break;case TokenType::Lt:op="<";break;case TokenType::Le:op="<=";break;case TokenType::Gt:op=">";break;case TokenType::Ge:op=">=";break;default:return e;} ++pos_; auto r=parseAddSub(); e=std::make_unique<BinaryExpr>(op,std::move(e),std::move(r)); }
+    while(true){ std::string op; switch(current().type){case TokenType::Lt:op="<";break;case TokenType::Le:op="<=";break;case TokenType::Gt:op=">";break;case TokenType::Ge:op=">=";break;default:return e;} ++pos_; auto r=parseAddSub(); e=std::make_unique<BinaryExpr>(op,std::move(e),std::move(r)); }
 }
 std::unique_ptr<Expr> Parser::parseAddSub(){ auto e=parseMulDiv(); while(current().type==TokenType::Plus||current().type==TokenType::Minus){std::string op=current().lexeme;++pos_;auto r=parseMulDiv();e=std::make_unique<BinaryExpr>(op,std::move(e),std::move(r));}return e; }
-std::unique_ptr<Expr> Parser::parseMulDiv(){ auto e=parsePrimary(); while(current().type==TokenType::Star||current().type==TokenType::Slash||current().type==TokenType::Percent){std::string op=current().lexeme;++pos_;auto r=parsePrimary();e=std::make_unique<BinaryExpr>(op,std::move(e),std::move(r));}return e; }
+std::unique_ptr<Expr> Parser::parseMulDiv(){ auto e=parseUnary(); while(current().type==TokenType::Star||current().type==TokenType::Slash||current().type==TokenType::Percent){std::string op=current().lexeme;++pos_;auto r=parseUnary();e=std::make_unique<BinaryExpr>(op,std::move(e),std::move(r));}return e; }
+std::unique_ptr<Expr> Parser::parseUnary(){
+    if(match(TokenType::Not)) return std::make_unique<UnaryExpr>("!",parseUnary());
+    return parsePrimary();
+}
 std::unique_ptr<Expr> Parser::parsePrimary(){
+    if(match(TokenType::True)) return std::make_unique<NumberExpr>(1);
+    if(match(TokenType::False)) return std::make_unique<NumberExpr>(0);
     if(match(TokenType::LParen)){auto e=parseExpr();expect(TokenType::RParen,")");return e;}
     if(current().type==TokenType::Number){long long v=std::stoll(current().lexeme);++pos_;return std::make_unique<NumberExpr>(v);}
     if(current().type==TokenType::Identifier){std::string n=current().lexeme;++pos_;return std::make_unique<VarExpr>(std::move(n));}

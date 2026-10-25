@@ -19,6 +19,8 @@ carbon intensity of the electricity grid at compile time vs. run time.
 ## Table of contents
 
 - [Quick start](#quick-start)
+- [Setup from a fresh clone](#setup-from-a-fresh-clone)
+- [Presentation examples](#presentation-examples)
 - [Prerequisites](#prerequisites)
 - [Command reference](#command-reference)
 - [Input language](#input-language)
@@ -35,13 +37,77 @@ carbon intensity of the electricity grid at compile time vs. run time.
 
 ## Quick start
 
-```bash
-python build.py          # compile the C++ sources into bin/
-python run.py test       # build and run the unit tests
-python run.py demo       # full walkthrough on benchmarks/cse.c
+From the repository root, enter the compiler directory first:
+
+```powershell
+cd green-tac
+python build.py
+python run.py test
+python -m unittest discover -s tests -p "test_*.py"
+python run.py steps benchmarks/cse.c
 ```
 
-`run.py` builds the compiler automatically the first time you use it.
+No third-party Python packages are required for the compiler, tests or walkthrough.
+`run.py` builds automatically only when the executable is missing. Rebuild with
+`python build.py` after changing C++ sources. Input-file edits need no rebuild.
+
+## Setup from a fresh clone
+
+1. Install Python 3.10+ and Git.
+2. Install a C++17 compiler and make it available on PATH. On Windows,
+   [MSYS2 UCRT64](https://www.msys2.org/) provides GCC:
+
+   ```bash
+   pacman -S --needed mingw-w64-ucrt-x86_64-gcc
+   ```
+
+3. In PowerShell, enable the default UCRT64 compiler path and check the tools:
+
+   ```powershell
+   $env:Path = "C:\msys64\ucrt64\bin;" + $env:Path
+   python --version
+   g++ --version
+   ```
+
+   Existing MINGW64 installations use `C:\msys64\mingw64\bin` instead.
+
+4. Clone, enter the compiler directory and run:
+
+   ```powershell
+   git clone https://github.com/Lakshyajeet3103/Green-TAC.git
+   cd Green-TAC/green-tac
+   python build.py
+   python run.py test
+   python -m unittest discover -s tests -p "test_*.py"
+   python run.py demo
+   ```
+
+See [SETUP.md](../SETUP.md) for Linux/macOS instructions, an optional Python
+environment, troubleshooting and how to run your own input.
+
+## Presentation examples
+
+```powershell
+# Example 1: Boolean grouping and short-circuit if/else
+python run.py steps benchmarks/cse.c
+
+# Example 2: arithmetic optimization and a Boolean while condition
+python run.py steps benchmarks/optimization_showcase.c
+python run.py compare benchmarks/optimization_showcase.c
+python run.py green benchmarks/optimization_showcase.c --compile-ci 700 --runtime-ci 200 --executions 10000
+```
+
+| Example | Baseline instructions | DAG instructions | Binary operations, baseline to DAG |
+|---|---:|---:|---:|
+| `cse.c`: nested Boolean if/else | 22 | 22 | 2 to 2 |
+| `optimization_showcase.c`: folding, simplification, copies, CSE and while | 30 | 27 | 13 to 6 |
+
+The first example demonstrates correct control flow. The second makes optimization
+changes visible. Save source edits before running and check `0. Source` in the
+walkthrough. Normal commands generate TAC rather than execute the input and print
+its variable values.
+
+[Final presentation with both complete walkthroughs](../output/Green-TAC%20Final%20Presentation%20-%20Two%20Examples.pptx)
 
 ### Prototype review snapshot on 15 October 2026
 
@@ -55,8 +121,10 @@ not establish a reliable runtime-overhead guarantee.
 
 Physical energy calibration remains pending. Adaptive demonstrations use
 explicitly labeled proxy energy and hypothetical carbon-intensity scenarios.
-On `benchmarks/cse.c`, compile CI 700 and runtime CI 200 select baseline at
-one execution, lightweight at three and DAG at ten.
+The fixed historical example is preserved in `benchmarks/adaptive_reference.c`.
+With the all-proxy model, compile CI 700 and runtime CI 200 select baseline at
+one execution, lightweight at three and DAG at ten. The editable `cse.c` now
+contains the Boolean if/else example above.
 
 - [Progress report](review/progress_report.md)
 - [Printable report](review/progress_report.html)
@@ -82,8 +150,8 @@ directly in a browser and use arrow keys, Notes, Fullscreen or Print.
 |---|---|---|
 | C++17 compiler (`g++`, `c++`, or `clang++`) | Building the compiler | Must be on `PATH`. On Windows, an **MSYS2 UCRT64** terminal works well. |
 | C compiler (`gcc`) | Benchmark measurement | Compiles the C code generated from TAC. |
-| Python 3.8+ | `build.py`, `run.py`, `tools/` | Standard library only for build/run. |
-| `pandas`, `numpy`, `scikit-learn`, `matplotlib` | Analysis, model fitting, plots | `pip install -r tools/requirements.txt` |
+| Python 3.10+ | `build.py`, `run.py`, `tools/` | Standard library only for build/run. |
+| `pandas`, `numpy`, `scikit-learn`, `matplotlib` | Analysis, model fitting, plots | `python -m pip install -r tools/requirements.txt` |
 
 ## Command reference
 
@@ -93,6 +161,8 @@ All commands are run through [`run.py`](run.py):
 |---|---|
 | `python run.py build` | Build `bin/green_tac(.exe)` |
 | `python run.py test` | Build and run the unit tests (`tests/test_main.cpp`) |
+| `python run.py steps <file>` | Show the complete source-to-optimized-TAC walkthrough |
+| `python run.py adaptive-demo` | Run fixed selection scenarios using `adaptive_reference.c` |
 | `python run.py info` | Show whether a physical energy provider (RAPL) is available |
 | `python run.py demo [file]` | Features + strategy table + TAC for every strategy + green selection |
 | `python run.py tac <file> --strategy <baseline\|lightweight\|dag>` | Print TAC for one strategy |
@@ -153,7 +223,22 @@ Supported constructs:
 
 - **Statements:** assignment `id = expr;`, `if (expr) { ... } [else { ... }]`, `while (expr) { ... }`
 - **Operators:** `+ - * / %`, comparisons `== != < <= > >=`, parentheses
-- **Operands:** integer literals and identifiers (no declarations needed)
+- **Boolean operators:** `&&` (AND), `||` (OR), `!` (NOT), with short-circuit evaluation.
+- **Operands:** integer literals, `true`/`false`, and identifiers (no declarations needed).
+- **Control flow:** `if`, `if/else`, `else if` chains, `while`, and nested blocks. Bodies require braces. `for`, `do/while`, `break`, and `continue` are not supported.
+
+Boolean results are `0` or `1`; conditions accept any expression (zero is false,
+nonzero is true). Precedence, highest to lowest: `!`, `* / %`, `+ -`,
+`< <= > >=`, `== !=`, `&&`, `||`. Parentheses override precedence.
+The right side of `&&` is skipped when the left side is false; the right side
+of `||` is skipped when the left side is true. TAC uses labels and conditional
+jumps to preserve this behavior, including in assignments.
+
+```powershell
+python build.py
+python run.py steps benchmarks/boolean.c
+python run.py compare benchmarks/boolean.c
+```
 
 ## Compiler pipeline
 
@@ -270,7 +355,7 @@ python run.py analyze
 python run.py plot
 
 # 6. Calibrate the cost model (requires real energy data)
-pip install -r tools/requirements.txt
+python -m pip install -r tools/requirements.txt
 python tools/fit_model.py data/measurements.csv data/model.csv
 ```
 

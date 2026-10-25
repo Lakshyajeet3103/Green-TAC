@@ -8,10 +8,88 @@
 #include <cassert>
 #include <sstream>
 #include <iostream>
+#include <map>
+#include <stdexcept>
 using namespace greentac;
 static TACProgram compile(const std::string& s){return TACGenerator().generate(Parser(Lexer(s).lex()).parse());}
 static std::string text(const TACProgram& p){std::ostringstream ss;p.print(ss);return ss.str();}
+// Execute the emitted TAC so tests verify semantics across every optimizer.
+static std::map<std::string,long long> execute(const TACProgram& p){
+    std::map<std::string,long long> values;
+    std::map<std::string,std::size_t> labels;
+    for(std::size_t i=0;i<p.code.size();++i)
+        if(p.code[i].kind==TACKind::Label) labels[p.code[i].label]=i;
+    auto value=[&](const std::string& x)->long long {
+        if(!x.empty() && (x[0]=='-' || (x[0]>='0' && x[0]<='9'))) return std::stoll(x);
+        return values[x];
+    };
+    auto eval=[](const std::string& op,long long a,long long b)->long long {
+        if(op=="+") return a+b;
+        if(op=="-") return a-b;
+        if(op=="*") return a*b;
+        if(op=="/" || op=="%") {
+            if(b==0) throw std::runtime_error("Short-circuit failure: division by zero");
+            return op=="/"?a/b:a%b;
+        }
+        if(op=="<") return a<b;
+        if(op=="<=") return a<=b;
+        if(op==">") return a>b;
+        if(op==">=") return a>=b;
+        if(op=="==") return a==b;
+        if(op=="!=") return a!=b;
+        throw std::runtime_error("Unknown TAC operator");
+    };
+    std::size_t pc=0,steps=0;
+    while(pc<p.code.size()){
+        if(++steps>10000) throw std::runtime_error("Loop did not terminate");
+        const auto& i=p.code[pc++];
+        switch(i.kind){
+        case TACKind::Assign: values[i.result]=value(i.arg1);break;
+        case TACKind::Binary: values[i.result]=eval(i.op,value(i.arg1),value(i.arg2));break;
+        case TACKind::Label: break;
+        case TACKind::Goto: pc=labels.at(i.label);break;
+        case TACKind::IfGoto: if(eval(i.op,value(i.arg1),value(i.arg2))) pc=labels.at(i.label);break;
+        }
+    }
+    return values;
+}
+static void checkBooleanPrograms(){
+    const std::vector<std::pair<std::string,long long>> cases={
+        {"result = true || false && false;",1},
+        {"result = (true || false) && false;",0},
+        {"result = !2 + 3;",3},
+        {"result = !!7;",1},
+        {"result = 2 == 3 < 4;",0},
+        {"result = !(2 < 3) || 4 >= 4 && 5 != 6;",1},
+        {"result = 7 && 9;",1},
+        {"result = 0 || 9;",1},
+        {"result = 0 && (1 / 0);",0},
+        {"result = 1 || (1 / 0);",1},
+        {"result = !(0 && (1 / 0));",1},
+        {"result = (2 && 3) + (0 || 8);",2},
+        {"result = 0; if (false && 1 / 0) { result = 9; } else if (!false) { result = 4; } else { result = 8; }",4},
+        {"result = 0; if (true || 1 / 0) { if (3) { result = 6; } }",6},
+        {"result = 0; if (1 - 1) { result = 9; }",0},
+        {"result = 0; while (result < 4 && !(result == 3)) { result = result + 1; }",3},
+        {"result = 3; while (result) { result = result - 1; }",0},
+        {"result = 0; while (false && 1 / 0) { result = 1; }",0},
+        {"result = 0; i = 0; while (i < 2) { j = 0; while (j < 3 && i != 2) { result = result + 1; j = j + 1; } i = i + 1; }",6}
+    };
+    for(const auto& test:cases)
+        for(auto strategy:{Strategy::Baseline,Strategy::Lightweight,Strategy::DAG})
+            assert(execute(optimize(compile(test.first),strategy)).at("result")==test.second);
+    for(const auto* invalid:{"x = a & b;", "x = a | b;", "x = !;", "x = a &&;"}){
+        bool rejected=false;
+        try{compile(invalid);}catch(const std::runtime_error&){rejected=true;}
+        assert(rejected);
+    }
+    std::ostringstream trace;
+    printCompilationSteps("flag = !(a < b) || true;",trace);
+    assert(trace.str().find("?")==std::string::npos);
+    assert(trace.str().find("L_rhs")!=std::string::npos);
+}
 int main(){
+    checkBooleanPrograms();
     auto p=compile("x = a + b * c;"); assert(p.code.size()==3);
     auto d=compile("x = (a+b) * (a+b) + (a+b);"); auto od=optimize(d,Strategy::DAG); assert(od.code.size()<d.code.size());
     auto l=compile("x = 2 + 3; y = x * 1;"); auto ol=optimize(l,Strategy::Lightweight); auto str=text(ol); assert(str.find("x = 5")!=std::string::npos); assert(str.find("y = 5")!=std::string::npos);

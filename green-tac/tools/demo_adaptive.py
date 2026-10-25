@@ -27,7 +27,7 @@ def main():
     for mode, model in [('runtime_fit_energy_proxy', 'data/model.csv'),
                         ('all_proxy_mechanism_demo', 'data/proxy_only_model.csv')]:
         for index, (label, runs, compile_ci, runtime_ci) in enumerate(SCENARIOS):
-            args = ['select', 'benchmarks/cse.c', model, str(compile_ci), str(runtime_ci), str(runs), '0.10']
+            args = ['select', 'benchmarks/adaptive_reference.c', model, str(compile_ci), str(runtime_ci), str(runs), '0.10']
             output = subprocess.check_output([str(DEFAULT_COMPILER)] + args, cwd=ROOT, text=True)
             (out / f'{mode}_{index+1:02}.txt').write_text(output, encoding='utf-8')
             selected = re.search(r'Selected strategy\s*:\s*(\w+)', output).group(1)

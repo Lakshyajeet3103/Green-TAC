@@ -15,6 +15,7 @@ struct Tree {
 Tree expression(const Expr* e){
     if(auto n=dynamic_cast<const NumberExpr*>(e)) return {std::to_string(n->value),{}};
     if(auto v=dynamic_cast<const VarExpr*>(e)) return {v->name,{}};
+    if(auto u=dynamic_cast<const UnaryExpr*>(e)) return {u->op,{expression(u->operand.get())}};
     if(auto b=dynamic_cast<const BinaryExpr*>(e))
         return {b->op,{expression(b->lhs.get()),expression(b->rhs.get())}};
     return {"?",{}};

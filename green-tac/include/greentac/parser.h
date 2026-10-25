@@ -16,10 +16,14 @@ private:
     std::unique_ptr<Stmt> parseStmt();
     std::unique_ptr<BlockStmt> parseBlock();
     std::unique_ptr<Expr> parseExpr();
+    std::unique_ptr<Expr> parseOr();
+    std::unique_ptr<Expr> parseAnd();
+    std::unique_ptr<Expr> parseEquality();
     std::unique_ptr<Expr> parseComparison();
     std::unique_ptr<Expr> parseAddSub();
     std::unique_ptr<Expr> parseMulDiv();
     std::unique_ptr<Expr> parsePrimary();
+    std::unique_ptr<Expr> parseUnary();
     std::vector<Token> tokens_; std::size_t pos_{0};
 };
 }

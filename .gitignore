@@ -1,0 +1,6 @@
+# Local presentation renders, draft decks and authoring scripts
+/.presentation-work/
+# Private manuscript working files
+/manuscript/work/
+# Optional Python environments
+.venv/

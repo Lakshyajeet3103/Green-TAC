@@ -25,6 +25,7 @@ public:
 private:
     TACProgram out_;
     std::string genExpr(const Expr* e);
+    void genCondition(const Expr* e, const std::string& trueLabel, const std::string& falseLabel);
     void genStmt(const Stmt* s);
     void genBlock(const BlockStmt* b);
 };

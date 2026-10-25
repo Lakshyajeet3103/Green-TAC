@@ -13,9 +13,16 @@ from tools.measure import DEFAULT_COMPILER, FEATURES, HEADER, ROOT, parse_featur
 
 class FeatureCollectionTests(unittest.TestCase):
     def test_compiler_exports_all_features(self):
-        output = subprocess.check_output(
-            [str(DEFAULT_COMPILER), 'features', 'benchmarks/cse.c', '--machine'],
-            cwd=ROOT, text=True)
+        # Keep expected feature counts independent of the editable demo.
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / 'features.c'
+            source.write_text(
+                'a = 10 + 20; b = a * 1; c = b + 0; '
+                'd = (x + y) * (x + y); e = (x + y) + (x + y); '
+                'f = 5 * 6; g = d + f; h = (x + y) * 1;')
+            output = subprocess.check_output(
+                [str(DEFAULT_COMPILER), 'features', str(source), '--machine'],
+                cwd=ROOT, text=True)
         features = parse_features(output)
         self.assertEqual(set(features), set(FEATURES))
         self.assertEqual(features['instructions'], 21)

@@ -8,6 +8,7 @@ enum class TokenType {
     Identifier, Number,
     Plus, Minus, Star, Slash, Percent,
     Assign, Eq, Ne, Lt, Le, Gt, Ge,
+    And, Or, Not, True, False,
     LParen, RParen, LBrace, RBrace, Semicolon,
     If, Else, While,
     End
