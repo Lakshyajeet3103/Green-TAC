@@ -88,7 +88,111 @@ static void checkBooleanPrograms(){
     assert(trace.str().find("?")==std::string::npos);
     assert(trace.str().find("L_rhs")!=std::string::npos);
 }
+
+static void checkHardInputs(){
+    const std::vector<std::pair<std::string,std::map<std::string,long long>>> cases={
+        {R"(a = 2 + 3 * 4 - 10 / 3 % 2;
+b = -(a - 20) * -2;
+c = (a + b) * (a - b) / 7 % 5;
+p = 2 - 3 - 4; q = 100 / 5 / 2; m = 2 * 3 % 4;)",
+         {{"a",13},{"b",-14},{"c",-3},{"p",-5},{"q",10},{"m",2}}},
+        {R"(a = 0; b = 0;
+t = (a = 1) || (b = 1);
+u = (a = 0) && (b = 2);
+v = (a = 0) || (b = 3);)", {{"a",0},{"b",3},{"t",1},{"u",0},{"v",1}}},
+        {R"(r = ((1 + 2) * (3 - 4 * (5 - 6 / (7 - 5)))) % 7 == -2 || 0 && 1 / 0;
+s = 1 || 1 / 0;
+k = 0 && (1 % 0);)", {{"r",0},{"s",1},{"k",0}}},
+        {R"(a = 5; b = 10; c = 0;
+r1 = a < b && b < 20;
+r2 = a > b || c;
+r3 = !(a == 5) || b != 10 || c >= 0;
+r4 = !a && b;
+r5 = a < b == 1;
+r6 = a <= 5 && b >= 10 && !(c);
+r7 = true && false || true;
+r8 = !!7;)", {{"r1",1},{"r2",0},{"r3",1},{"r4",0},{"r5",1},{"r6",1},{"r7",1},{"r8",1}}},
+        {R"(a = 1; b = 0;
+if (a) if (b) r = 1; else r = 2;
+x = 7;
+if (x > 5 && x < 10 || x == 0) y = 1; else y = 2;)", {{"r",2},{"y",1}}},
+        {R"(count = 0; n = 2;
+while (n < 30) {
+    isp = 1; d = 2;
+    while (d * d <= n && isp) {
+        if (n % d == 0) isp = 0;
+        d = d + 1;
+    }
+    if (isp) count = count + 1;
+    n = n + 1;
+})", {{"count",10},{"n",30},{"isp",1},{"d",6}}},
+        {R"(a = 3; b = 4; c = 5;
+r = !(a < b && b < c) || (a = a + 10) > 12 && !(b == 5) == true;
+g = ((a * b - c) % 6 + -(c / 2)) * (a >= b) + (c != 5 || a == 13);)",
+         {{"a",13},{"b",4},{"c",5},{"r",1},{"g",4}}},
+        {"a=0; b=0; t=(a=1)||(b=1); afterOr=b; u=(a=0)&&(b=2); afterAnd=b;",{{"afterOr",0},{"afterAnd",0}}},
+        {"a=1; r=a+(a=2); s=(a=3)+(a=4); q=a<(a=5);",{{"r",3},{"s",7},{"q",1},{"a",5}}},
+        {"a=b=c=7; x=+a; while (a) a=a-1; if (-b) x=9;",{{"a",0},{"b",7},{"c",7},{"x",9}}},
+        {"t1=10; x=2+3; result=t1+x; t2=20; y=1+2; z=t2+y;",{{"result",15},{"z",23}}},
+        {"a=0; if (a) if (1) r=1; else r=2; else r=3;",{{"r",3}}}
+    };
+    for(const auto& test:cases){
+        for(auto strategy:{Strategy::Baseline,Strategy::Lightweight,Strategy::DAG}){
+            auto values=execute(optimize(compile(test.first),strategy));
+            for(const auto& expected:test.second){
+                if(values.at(expected.first)!=expected.second)
+                    throw std::runtime_error("Hard input failed: " + strategyName(strategy) + " variable " + expected.first);
+            }
+        }
+        std::ostringstream trace;
+        printCompilationSteps(test.first,trace);
+        assert(trace.str().find("?")==std::string::npos);
+    }
+    for(const auto* invalid:{"x=(1=2);", "x=((a+b)=2);", "x=-;", "if (1) x=2; else", "a=(b=);"}){
+        bool rejected=false;
+        try{compile(invalid);}catch(const std::runtime_error&){rejected=true;}
+        assert(rejected);
+    }
+}
+
+static void checkNamedInputs(){
+    struct Case { std::string name, source; std::map<std::string,long long> expected; };
+    const std::vector<Case> cases={
+        {"A1", R"(a = 2 + 3 * 4 - 10 / 3 % 2; b = -(a - 20) * -2; c = (a + b) * (a - b) / 7 % 5;)", {{"a",13},{"b",-14},{"c",-3}}},
+        {"A2", R"(p = 2 - 3 - 4; q = 100 / 5 / 2; m = 2 * 3 % 4;)", {{"p",-5},{"q",10},{"m",2}}},
+        {"A3", R"(x = ((((((1 + 2) * 3) - 4) * 5) + 6) * 7) - 8; y = 1 + (2 * (3 + (4 * (5 + (6 * (7 + 8))))));)", {{"x",209},{"y",767}}},
+        {"A4", R"(a = - - 3; b = !-0; c = - !0; d = 5 - -3; e = 2 * -3 * -4; f = !0 + !0 * 5;)", {{"a",3},{"b",1},{"c",-1},{"d",8},{"e",24},{"f",6}}},
+        {"A5", R"(a = 12; b = 5; a = a + b; b = a - b; a = a - b;)", {{"a",5},{"b",12}}},
+        {"B1", R"(x = y = z = 5; w = (x = x + 1) * (y = y + 2) + z;)", {{"x",6},{"y",7},{"z",5},{"w",47}}},
+        {"C1", R"(a = 5; b = 10; c = 0; r1 = a < b && b < 20; r2 = a > b || c; r3 = !(a == 5) || b != 10 || c >= 0; r4 = !a && b; r5 = a < b == 1; r6 = a <= 5 && b >= 10 && !(c); r7 = true && false || true; r8 = !!7;)", {{"r1",1},{"r2",0},{"r3",1},{"r4",0},{"r5",1},{"r6",1},{"r7",1},{"r8",1}}},
+        {"C2", R"(a = 1 < 2 < 3; b = 3 > 2 > 1; c = 5 == 5 == 1; d = 2 < 1 == 0; e = 1 != 2 != 2; f = 10 > 5 == 3 > 1;)", {{"a",1},{"b",0},{"c",1},{"d",1},{"e",1},{"f",1}}},
+        {"C3", R"(a = 7; b = 3; s = (a > b) + (a < b) + (a == 7) * 10 + (a != b && b) * 100 + (a < b || b > 5) * 1000;)", {{"s",111}}},
+        {"D1", R"(a = 0; b = 0; t = (a = 1) || (b = 1); u = (a = 0) && (b = 2); v = (a = 0) || (b = 3);)", {{"a",0},{"b",3},{"t",1},{"u",0},{"v",1}}},
+        {"D2", R"(r = ((1 + 2) * (3 - 4 * (5 - 6 / (7 - 5)))) % 7 == -2 || 0 && 1 / 0; s = 1 || 1 / 0; k = 0 && (1 % 0);)", {{"r",0},{"s",1},{"k",0}}},
+        {"D3", R"(c = 0; r = (c = c + 1) > 5 && (c = c + 10) > 0 || (c = c + 100) > 50 && (c = c + 1000) > 0; d = 0; s = ((d = d + 1) || (d = d + 10)) && ((d = d + 100) > 100 || (d = d + 1000)); e = 0; u = !((e = 1) && (e = 2) && (e = 0)) || (e = 99);)", {{"r",1},{"c",1101},{"s",1},{"d",101},{"u",1},{"e",0}}},
+        {"D4", R"(r = (a = 1) && (b = 2) && (c = 3) && (d = 0) && (e = 5) && (f = 6); q = (a = 0) || (b = 0) || (c = 7) || (d = 8) || (e = 9);)", {{"r",0},{"q",1},{"a",0},{"b",0},{"c",7},{"d",0}}},
+        {"E1", R"(a = 3; b = 4; c = 5; r = !(a < b && b < c) || (a = a + 10) > 12 && !(b == 5) == true; g = ((a * b - c) % 6 + -(c / 2)) * (a >= b) + (c != 5 || a == 13);)", {{"a",13},{"b",4},{"c",5},{"r",1},{"g",4}}},
+        {"F1", R"(a = 1; b = 0; if (a) if (b) r = 1; else r = 2;)", {{"r",2}}},
+        {"F2", R"(n = 10; a = 0; b = 1; i = 0; while (i < n) { t = a + b; a = b; b = t; i = i + 1; })", {{"a",55},{"b",89}}},
+        {"F3", R"(count = 0; n = 2; while (n < 30) { isp = 1; d = 2; while (d * d <= n && isp) { if (n % d == 0) isp = 0; d = d + 1; } if (isp) count = count + 1; n = n + 1; })", {{"count",10}}},
+    };
+    for(const auto& test:cases){
+        for(auto strategy:{Strategy::Baseline,Strategy::Lightweight,Strategy::DAG}){
+            auto values=execute(optimize(compile(test.source),strategy));
+            for(const auto& expected:test.expected){
+                if(values.at(expected.first)!=expected.second)
+                    throw std::runtime_error(test.name + " failed in " + strategyName(strategy) + ": " + expected.first);
+            }
+            if(test.name=="D4" && (values.count("e") || values.count("f")))
+                throw std::runtime_error("D4 executed a skipped assignment in " + strategyName(strategy));
+        }
+    }
+    std::cout << "A1-F3: all 17 inputs passed in all 3 strategies (51 executions).\n";
+}
+
 int main(){
+    checkNamedInputs();
+    checkHardInputs();
     checkBooleanPrograms();
     auto p=compile("x = a + b * c;"); assert(p.code.size()==3);
     auto d=compile("x = (a+b) * (a+b) + (a+b);"); auto od=optimize(d,Strategy::DAG); assert(od.code.size()<d.code.size());

@@ -225,11 +225,12 @@ Supported constructs:
 - **Operators:** `+ - * / %`, comparisons `== != < <= > >=`, parentheses
 - **Boolean operators:** `&&` (AND), `||` (OR), `!` (NOT), with short-circuit evaluation.
 - **Operands:** integer literals, `true`/`false`, and identifiers (no declarations needed).
-- **Control flow:** `if`, `if/else`, `else if` chains, `while`, and nested blocks. Bodies require braces. `for`, `do/while`, `break`, and `continue` are not supported.
+- **Control flow:** `if`, `if/else`, `else if` chains, `while`, and nested blocks. Bodies may be braced blocks or single statements; `else` binds to the nearest unmatched `if`. `for`, `do/while`, `break`, and `continue` are not supported.
 
 Boolean results are `0` or `1`; conditions accept any expression (zero is false,
-nonzero is true). Precedence, highest to lowest: `!`, `* / %`, `+ -`,
-`< <= > >=`, `== !=`, `&&`, `||`. Parentheses override precedence.
+nonzero is true). Precedence, highest to lowest: unary `! + -`, `* / %`, `+ -`,
+`< <= > >=`, `== !=`, `&&`, `||`, assignment `=`. Assignment expressions associate right to left and return the assigned value. Parentheses override precedence.
+Unary plus and minus are supported. Ordinary binary operands evaluate left to right; their values are preserved across assignment side effects. Integer division truncates toward zero, and remainder follows the dividend sign.
 The right side of `&&` is skipped when the left side is false; the right side
 of `||` is skipped when the left side is true. TAC uses labels and conditional
 jumps to preserve this behavior, including in assignments.

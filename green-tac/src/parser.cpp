@@ -7,6 +7,7 @@ bool Parser::match(TokenType t){ if(current().type==t){++pos_;return true;}retur
 const Token& Parser::expect(TokenType t,const char* what){ if(current().type!=t) throw std::runtime_error(std::string("Expected ")+what+" at "+std::to_string(current().line)+":"+std::to_string(current().col)); return tokens_[pos_++]; }
 Program Parser::parse(){ Program p; while(current().type!=TokenType::End) p.statements.push_back(parseStmt()); return p; }
 std::unique_ptr<Stmt> Parser::parseStmt(){
+    if(current().type==TokenType::LBrace) return parseBlock();
     if(match(TokenType::If)){
         expect(TokenType::LParen,"("); auto cond=parseExpr(); expect(TokenType::RParen,")");
         auto s=std::make_unique<IfStmt>(); s->cond=std::move(cond); s->thenBlock=parseBlock();
@@ -26,11 +27,21 @@ std::unique_ptr<Stmt> Parser::parseStmt(){
     return std::make_unique<AssignStmt>(id.lexeme,std::move(e));
 }
 std::unique_ptr<BlockStmt> Parser::parseBlock(){
-    expect(TokenType::LBrace,"{"); auto b=std::make_unique<BlockStmt>();
+    auto b=std::make_unique<BlockStmt>();
+    if(!match(TokenType::LBrace)){ b->statements.push_back(parseStmt()); return b; }
     while(current().type!=TokenType::RBrace){ if(current().type==TokenType::End) throw std::runtime_error("Unterminated block"); b->statements.push_back(parseStmt()); }
     expect(TokenType::RBrace,"}"); return b;
 }
-std::unique_ptr<Expr> Parser::parseExpr(){ return parseOr(); }
+std::unique_ptr<Expr> Parser::parseExpr(){
+    auto e=parseOr();
+    if(match(TokenType::Assign)){
+        auto v=dynamic_cast<VarExpr*>(e.get());
+        if(!v) throw std::runtime_error("Assignment target must be a variable");
+        auto name=v->name;
+        return std::make_unique<AssignExpr>(name,parseExpr());
+    }
+    return e;
+}
 std::unique_ptr<Expr> Parser::parseOr(){
     auto e=parseAnd();
     while(match(TokenType::Or)){auto r=parseAnd();e=std::make_unique<BinaryExpr>("||",std::move(e),std::move(r));}
@@ -56,6 +67,8 @@ std::unique_ptr<Expr> Parser::parseComparison(){
 std::unique_ptr<Expr> Parser::parseAddSub(){ auto e=parseMulDiv(); while(current().type==TokenType::Plus||current().type==TokenType::Minus){std::string op=current().lexeme;++pos_;auto r=parseMulDiv();e=std::make_unique<BinaryExpr>(op,std::move(e),std::move(r));}return e; }
 std::unique_ptr<Expr> Parser::parseMulDiv(){ auto e=parseUnary(); while(current().type==TokenType::Star||current().type==TokenType::Slash||current().type==TokenType::Percent){std::string op=current().lexeme;++pos_;auto r=parseUnary();e=std::make_unique<BinaryExpr>(op,std::move(e),std::move(r));}return e; }
 std::unique_ptr<Expr> Parser::parseUnary(){
+    if(match(TokenType::Minus)) return std::make_unique<UnaryExpr>("-",parseUnary());
+    if(match(TokenType::Plus)) return std::make_unique<UnaryExpr>("+",parseUnary());
     if(match(TokenType::Not)) return std::make_unique<UnaryExpr>("!",parseUnary());
     return parsePrimary();
 }
