@@ -14,3 +14,4 @@ while (i < 5 && ready) {
     ready = i < 3;
 }
 safe = true || (1 / 0);
+-

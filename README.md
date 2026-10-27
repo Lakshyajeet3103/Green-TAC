@@ -45,10 +45,10 @@ proxy estimates where physical energy models are unavailable.
 
 ## Supported language
 
-- Integer arithmetic: `+`, `-`, `*`, `/`, `%`, and parentheses
-- Assignments and comparisons: `<`, `<=`, `>`, `>=`, `==`, `!=`
+- Integer arithmetic: `+`, `-`, `*`, `/`, `%`, unary `+`/`-`, and parentheses
+- Assignments (including assignment expressions) and comparisons: `<`, `<=`, `>`, `>=`, `==`, `!=`
 - Boolean expressions: `&&`, `||`, `!`, `true`, `false`, with short-circuit evaluation
-- `if`, `if/else`, `else if`, `while`, and nested bodies enclosed in braces
+- `if`, `if/else`, `else if`, `while`, and nested bodies using braces or a single statement
 
 The compiler accepts this small language, rather than arbitrary C programs.
 `for`, `do/while`, `break`, and `continue` are not implemented.
