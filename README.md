@@ -18,7 +18,7 @@ python run.py steps benchmarks/cse.c
 ```
 
 Using a ZIP? Extract it, enter `Green-TAC-main/green-tac`, then run the build
-and demo commands above. Git is not required. See the [ZIP setup steps](SETUP.md#option-a-zip-download-no-git-required).
+and demo commands above. Git is not required. See the [ZIP setup steps](SETUP.md#1-download-and-extract-the-project-zip).
 
 For Windows compiler installation, Linux/macOS setup, optional analysis packages
 and troubleshooting, follow the [step-by-step setup guide](SETUP.md).
@@ -57,6 +57,7 @@ The compiler accepts this small language, rather than arbitrary C programs.
 
 - [Detailed project README and command reference](green-tac/README.md)
 - [Setup guide](SETUP.md)
+- [Setup guide (PDF)](output/pdf/Green-TAC-Setup.pdf)
 - [Research workflow](green-tac/RESEARCH_WORKFLOW.md)
 - [Project specification](green-tac/PROJECT_SPEC.md)
 - [Project manuscript](manuscript/Green_TAC_Manuscript.docx)

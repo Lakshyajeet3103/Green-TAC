@@ -4,3 +4,6 @@
 /manuscript/work/
 # Optional Python environments
 .venv/
+/tmp/
+# Separate local application; not part of the repository submission
+/optional-application/
