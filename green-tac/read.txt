@@ -1,0 +1,307 @@
+==============================================================================
+ GREEN TAC - HOW TO SET UP AND RUN
+ Carbon-Aware Adaptive Three-Address Code Optimization for Green Compilation
+ Repo: https://github.com/Lakshyajeet3103/Green-TAC
+==============================================================================
+
+WHAT THIS PROJECT DOES
+----------------------
+Green TAC is a small research compiler. It reads a tiny C-like language,
+turns it into Three-Address Code (TAC), optimizes it with one of three
+strategies, and then picks the strategy that gives the LOWEST estimated CO2e.
+
+The choice depends on:
+  - energy used while compiling
+  - energy used while the program runs
+  - how many times the program will run
+  - carbon intensity of the electricity grid at compile time and at run time
+
+The three strategies:
+  baseline     Plain TAC generation, no optimization.
+  lightweight  Constant folding, algebraic simplification, copy propagation.
+  dag          Lightweight + local common-subexpression elimination (CSE).
+
+The compiler is written in C++17. Python only drives builds, tests,
+benchmarking and analysis. No CMake, Make, LLVM or Visual Studio is needed.
+
+
+------------------------------------------------------------------------------
+STEP 1: INSTALL THE REQUIREMENTS
+------------------------------------------------------------------------------
+You need:
+  - Python 3.10 or newer
+  - A C++17 compiler on your PATH: g++, c++ or clang++
+  - gcc (only needed to compile the C code that Green TAC generates)
+  - Git (optional, you can download the ZIP instead)
+
+Check that they are installed:
+
+    python --version
+    g++ --version
+
+(On Linux/macOS you may need to type python3 instead of python.)
+
+Windows users:
+  1. Install MSYS2 from https://www.msys2.org/
+  2. Open the "MSYS2 UCRT64" terminal and run:
+         pacman -S --needed mingw-w64-ucrt-x86_64-gcc
+  3. In PowerShell, add the compiler to PATH for this session:
+         $env:Path = "C:\msys64\ucrt64\bin;" + $env:Path
+     (If you use MINGW64 instead, use C:\msys64\mingw64\bin.)
+
+Linux (Ubuntu/Debian):
+         sudo apt update
+         sudo apt install -y build-essential python3 git
+
+macOS:
+         xcode-select --install
+
+
+------------------------------------------------------------------------------
+STEP 2: GET THE CODE
+------------------------------------------------------------------------------
+Option A - Git:
+
+    git clone https://github.com/Lakshyajeet3103/Green-TAC.git
+    cd Green-TAC/green-tac
+
+Option B - ZIP:
+  Download the ZIP from GitHub, extract it, then enter the folder
+  Green-TAC-main/green-tac
+
+IMPORTANT: every build.py and run.py command must be run from inside the
+"green-tac" folder (the one that contains build.py and run.py).
+
+
+------------------------------------------------------------------------------
+STEP 3: BUILD THE COMPILER
+------------------------------------------------------------------------------
+
+    python build.py
+
+This compiles everything in src/ with: g++ -std=c++17 -O2 -Wall -Wextra
+and creates the executable at:
+
+    bin/green_tac        (bin/green_tac.exe on Windows)
+
+You only need to rebuild after changing C++ source files. Editing input
+programs (.c files) needs no rebuild. run.py also builds automatically if
+the executable is missing.
+
+
+------------------------------------------------------------------------------
+STEP 4: RUN THE TESTS
+------------------------------------------------------------------------------
+
+C++ unit tests:
+
+    python run.py test
+
+Expected ending:
+    A1-F3: all 17 inputs passed in all 3 strategies (51 executions).
+    All tests passed.
+
+Python tests:
+
+    python -m unittest discover -s tests -p "test_*.py"
+
+Expected ending:
+    Ran 6 tests ... OK
+
+
+------------------------------------------------------------------------------
+STEP 5: RUN THE EXAMPLES
+------------------------------------------------------------------------------
+
+Example 1 - nested Boolean if/else with short-circuit evaluation:
+
+    python run.py steps benchmarks/cse.c
+
+"steps" prints the full walkthrough: source, tokens, AST tree, baseline TAC,
+each lightweight rewrite, DAG nodes, and the final TAC. For this example the
+instruction count stays at 22 -> 22.
+
+Example 2 - optimization showcase (folding, simplification, copy
+propagation, CSE and a while loop):
+
+    python run.py steps benchmarks/optimization_showcase.c
+    python run.py compare benchmarks/optimization_showcase.c
+
+Here instructions drop from 30 to 27 and binary operations drop from
+13 to 6 under the dag strategy.
+
+Example 3 - carbon-aware strategy selection:
+
+    python run.py green benchmarks/optimization_showcase.c --compile-ci 700 --runtime-ci 200 --executions 10000
+
+This prints a table with compile energy, runtime energy, runtime and CO2e
+for baseline / lightweight / dag, and then the chosen strategy
+("Selected strategy"). With the settings above it selects: dag.
+
+Note: energy numbers are labeled "PROXY estimates" because physical energy
+calibration is not available on most machines. Do not report them as
+measured savings.
+
+
+------------------------------------------------------------------------------
+STEP 6: RUN YOUR OWN PROGRAM
+------------------------------------------------------------------------------
+Create a file, for example my_program.c, inside the benchmarks/ folder:
+
+    a = 2;
+    b = 3;
+    x = (a + b) * (a + b);
+    if (x > 10) {
+        y = x * 2;
+    } else {
+        y = x + 1;
+    }
+
+Then run:
+
+    python run.py steps benchmarks/my_program.c
+    python run.py compare benchmarks/my_program.c
+    python run.py green benchmarks/my_program.c
+
+Supported language:
+  - Integer variables (no declarations needed) and integer literals
+  - Arithmetic: + - * / %   and unary + -   and parentheses
+  - Comparisons: < <= > >= == !=
+  - Boolean: && || ! true false (with short-circuit evaluation)
+  - Statements: assignment, if, if/else, else if, while, nested blocks
+    (braces or single statement)
+  - NOT supported: for, do/while, break, continue
+
+Note: the compiler generates TAC. It does not execute your program or print
+variable values.
+
+
+------------------------------------------------------------------------------
+STEP 7: COMMAND REFERENCE
+------------------------------------------------------------------------------
+All commands are run from the green-tac folder.
+
+  python run.py build                      Build bin/green_tac
+  python run.py test                       Build and run C++ unit tests
+  python run.py steps <file>               Full source-to-optimized-TAC walkthrough
+  python run.py demo [file]                Features, strategy table, TAC, green selection
+  python run.py tac <file> --strategy <baseline|lightweight|dag>
+                                           Print TAC for one strategy
+  python run.py compare <file>             Side-by-side metrics and TAC, all strategies
+  python run.py green <file> [options]     Run the carbon-aware selector
+  python run.py c <file> --strategy <s> [--output out.c]
+                                           Emit compilable C from the optimized TAC
+  python run.py adaptive-demo              Fixed selection scenarios
+  python run.py info                       Check if a physical energy provider (RAPL) exists
+
+Options for "green":
+  --compile-ci N           Grid carbon intensity during compilation (gCO2e/kWh), default 400
+  --runtime-ci N           Grid carbon intensity during execution (gCO2e/kWh), default 400
+  --executions N           Expected number of runs of the program, default 1000
+  --max-runtime-overhead X Max allowed slowdown vs baseline, default 0.10 (10%)
+  --model PATH             Cost-model coefficients, default data/model.csv
+
+Generate real C code from the optimized TAC and compile it:
+
+    python run.py c benchmarks/mixed.c --strategy dag --output out.c
+    gcc out.c -o out
+
+You can also call the binary directly:
+
+    bin/green_tac tac <file> <baseline|lightweight|dag>
+    bin/green_tac compare <file>
+    bin/green_tac features <file> [--machine]
+    bin/green_tac c <file> <baseline|lightweight|dag> <out.c>
+    bin/green_tac select <file> [model.csv] [compileCI] [runtimeCI] [executions] [maxRuntimeOverhead]
+    bin/green_tac steps <file>
+    bin/green_tac info
+
+
+------------------------------------------------------------------------------
+STEP 8 (OPTIONAL): RESEARCH / BENCHMARK WORKFLOW
+------------------------------------------------------------------------------
+This part is only needed to regenerate data, measure timing and refit the
+cost model. It needs extra Python packages:
+
+    python -m pip install -r tools/requirements.txt
+
+(pandas, numpy, scikit-learn, matplotlib)
+
+Then:
+
+    python run.py dataset --count 120      Regenerate the synthetic benchmark corpus
+    python run.py collect --runs 50 --clean  Measure timing/energy for each benchmark x strategy
+    python run.py analyze                  Summarize the measurements CSV
+    python run.py plot                     Write plots to data/results/
+    python tools/fit_model.py data/measurements.csv data/model.csv
+                                           Calibrate the cost model
+
+    python run.py runtime-study --out data/runtime_study_repeat
+                                           Collect another runtime study without overwriting the original
+
+Energy measurement:
+  - On Linux with a powercap/RAPL counter, real package energy is recorded.
+  - On Windows/macOS or unsupported systems, energy columns stay blank and
+    only timing is recorded. Check with: python run.py info
+
+
+------------------------------------------------------------------------------
+HOW THE COMPILER IS ORGANIZED
+------------------------------------------------------------------------------
+  Source program
+    -> Lexer                  src/lexer.cpp
+    -> Parser / AST           src/parser.cpp, src/ast.cpp
+    -> Baseline TAC           src/tac.cpp
+    -> Optimization           src/optimizer.cpp  (baseline / lightweight / dag)
+    -> Feature extraction     src/features.cpp
+    -> Cost model             src/selector.cpp, data/model.csv
+    -> Carbon calculation     src/carbon.cpp
+    -> Strategy selection     src/selector.cpp
+    -> Final TAC
+    -> Optional C output      src/codegen_c.cpp
+
+Carbon formula used for each strategy i:
+
+    E_total(i) = E_compile(i) + N * E_runtime(i)
+
+    CO2e(i) = ( E_compile(i) * CI_compile + N * E_runtime(i) * CI_runtime ) / 3,600,000
+
+    (energy in joules, CI in gCO2e/kWh, N = expected number of executions)
+
+The selector picks the lowest-CO2e strategy among those whose predicted
+runtime is within --max-runtime-overhead of baseline.
+
+
+------------------------------------------------------------------------------
+TROUBLESHOOTING
+------------------------------------------------------------------------------
+  "g++ not found" / build fails
+      The C++ compiler is not on PATH. Install it (Step 1) and reopen the
+      terminal. On Windows, re-run the $env:Path line from Step 1.
+
+  "python not found"
+      Use python3 on Linux/macOS, or reinstall Python and tick
+      "Add Python to PATH" on Windows.
+
+  "No such file" for run.py or build.py
+      You are in the wrong folder. cd into Green-TAC/green-tac first.
+
+  Output looks stale after editing C++ code
+      Run python build.py again.
+
+  Missing pandas / numpy / scikit-learn
+      Only needed for Step 8: python -m pip install -r tools/requirements.txt
+
+
+------------------------------------------------------------------------------
+MORE DOCUMENTATION IN THE REPO
+------------------------------------------------------------------------------
+  SETUP.md                       Detailed setup guide
+  green-tac/README.md            Full project README and command reference
+  green-tac/PROJECT_SPEC.md      Research objective and specification
+  green-tac/RESEARCH_WORKFLOW.md Step-by-step experimental workflow (if present)
+  green-tac/data/README.md       Data file formats
+  manuscript/Green_TAC_Manuscript.docx
+  output/Green-TAC Final Presentation - Two Examples.pptx
+
+==============================================================================
